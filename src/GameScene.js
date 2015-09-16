@@ -1,30 +1,48 @@
-score=0;
-life=3;
-var GridLayer = cc.LayerColor.extend({
+var getGridLine = function(startx, starty, width, height, xCount, yCount){
+  var xStep =  width / xCount;
+  var yStep = height / yCount;
+  var result=[];
+  for (var x = 0 ; x <= xCount ; x++){
+    result.push({from:cc.p(startx+x*xStep,starty), to:cc.p(startx+x*xStep,starty+height)});
+  }
+  for (var y = 0 ; y <= yCount ; y++){
+    result.push({from:cc.p(startx,starty+y*yStep), to:cc.p(startx+width,starty+y*yStep)});
+  }
+  return result;
+}
+var GridLayer = cc.Layer.extend({
   ctor: function(){
     this._super();
     this.init();
   },
   init: function(){
-    this._super(cc.color(0,0,0,100));
+    this._super();
     var winSize = cc.director.getWinSize();
-    var centerPos = cc.p(winSize.width/2, winSize.height/2);
+    var gridStartX = 10;
+    var gridStartY = winSize.height-winSize.width;
+    var gridWidth = winSize.width-20;
+    var gridHeight = winSize.width-20;
+    var gridXCount = 12;
+    var gridYCount = 12;
+    var charSizeX = gridWidth/gridXCount;
+    var charSizeY = gridHeight/gridYCount;
+    /// 그리드 그리기 시작
+    getGridLine(gridStartX, gridStartY, gridWidth, gridHeight, gridXCount, gridYCount)
+    .map(function(elem){
+      var line = new cc.DrawNode();
+      line.drawSegment(elem.from, elem.to, 2, cc.color(30,50,70));
+      this.addChild(line);
+    },this);
+    /// 그리드 그리기 끝
     
-    var gamebg = new cc.Sprite(grid_bg_png);
-    gamebg.setAnchorPoint(0, 0);
-    gamebg.setPosition(size.width/2, size.height /2+150);
-    gamebg.setScale(1.3);
-    this.addChild(gamebg,-400);
+    /// 케릭터 이미지 그리기 시작
+    var Character = new cc.Sprite(shovel);
+    Character.setAnchorPoint(0, 0);
+    Character.setPosition(gridStartX+charSizeX*10, gridStartY+charSizeY*10);
+    Character.setScale(0.45);
+    this.addChild(Character);
+    /// 케릭터 이미지 그리기 끝
     
-    for(var i = 0; i<30 ; i ++){
-      var sprite_action1 = cc.MoveBy.create(20,cc.p(-3000,0));
-      childrens1[i] = new cc.Sprite(bgbg);
-      childrens1[i].setAnchorPoint(0,0);
-      childrens1[i].setPosition(100*i,100);
-      childrens1[i].setScale(0.1);
-      childrens1[i].runAction(sprite_action1);
-      this.addChild(childrens1[i],-50);
-    }
   }
 });
 
@@ -187,7 +205,8 @@ var GameLayer = cc.Layer.extend({
 var GameScene = cc.Scene.extend({
     onEnter:function () {
         this._super();
-        var layer = new GameLayer();
+        //var layer = new GameLayer();
+        var layer = new GridLayer();
         this.addChild(layer);
         layer.init();
     }

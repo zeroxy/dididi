@@ -24,8 +24,8 @@ var TitleLayer = cc.Layer.extend({
     this.addChild(menu, 1);
     
 
-    this.helloLabel = new cc.LabelTTF("Catch The FLYYY!", "Impact", 38);
-    this.helloLabel.setPosition(size.width / 2, size.height /2  + 40);
+    this.helloLabel = new cc.LabelTTF("RETURN!!\n   Undead!!", "Impact", 70);
+    this.helloLabel.setPosition(size.width / 2 , size.height /2  + 40);
     this.addChild(this.helloLabel, 5);
 
   }
