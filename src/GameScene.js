@@ -22,8 +22,8 @@ var GridLayer = cc.Layer.extend({
     var gridStartY = winSize.height-winSize.width;
     var gridWidth = winSize.width-20;
     var gridHeight = winSize.width-20;
-    var gridXCount = 12;
-    var gridYCount = 12;
+    var gridXCount = 3;
+    var gridYCount = 3;
     var charSizeX = gridWidth/gridXCount;
     var charSizeY = gridHeight/gridYCount;
     /// 그리드 그리기 시작
@@ -37,9 +37,10 @@ var GridLayer = cc.Layer.extend({
     
     /// 케릭터 이미지 그리기 시작
     var Character = new cc.Sprite(shovel);
-    Character.setAnchorPoint(0, 0);
-    Character.setPosition(gridStartX+charSizeX*10, gridStartY+charSizeY*10);
-    Character.setScale(0.45);
+    Character.setAnchorPoint(0.5, 0.5);
+    Character.setPosition(gridStartX+charSizeX*1.5, gridStartY+charSizeY*1.5);
+    Character.setScaleX( charSizeX / Character.getContentSize().height * 0.9);
+    Character.setScaleY( charSizeY / Character.getContentSize().width * 0.9);
     this.addChild(Character);
     /// 케릭터 이미지 그리기 끝
     
