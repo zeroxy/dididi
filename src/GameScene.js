@@ -46,7 +46,69 @@ var GridLayer = cc.Layer.extend({
     
   }
 });
-
+var ButtonLayer = cc.Layer.extend({
+  ctor: function(){
+    this._super();
+    this.init();
+  },
+  init: function(){
+    this._super();
+    var winSize = cc.director.getWinSize();
+    var buttonSize = (winSize.height-winSize.width)/4.5;
+    
+    /// 방향키 상 그리기 시작
+    var upButton = new cc.Sprite(garlic);
+    upButton.setAnchorPoint(0.5, 0.5);
+    upButton.setPosition(buttonSize*6,buttonSize*3.8);
+    upButton.setScaleX( buttonSize / upButton.getContentSize().height * 0.9);
+    upButton.setScaleY( buttonSize / upButton.getContentSize().width * 0.9);
+    /// 방향키 상 그리기 끝
+    /// 방향키 좌 그리기 시작
+    var leftButton = new cc.Sprite(garlic);
+    leftButton.setAnchorPoint(0.5, 0.5);
+    leftButton.setRotation(270);
+    leftButton.setPosition(buttonSize*5.2,buttonSize*2.6);
+    leftButton.setScaleX( buttonSize / leftButton.getContentSize().height * 0.9);
+    leftButton.setScaleY( buttonSize / leftButton.getContentSize().width * 0.9);
+    /// 방향키 좌 그리기 끝
+    /// 방향키 우 그리기 시작
+    var rightButton = new cc.Sprite(garlic);
+    rightButton.setAnchorPoint(0.5, 0.5);
+    rightButton.setRotation(90);
+    rightButton.setPosition(buttonSize*6.2,buttonSize*2.6);
+    rightButton.setScaleX( buttonSize / rightButton.getContentSize().height * 0.9);
+    rightButton.setScaleY( buttonSize / rightButton.getContentSize().width * 0.9);
+    /// 방향키 우 그리기 끝
+    /// 방향키 하 그리기 시작
+    var downButton = new cc.Sprite(garlic);
+    downButton.setAnchorPoint(0.5, 0.5);
+    downButton.setRotation(180);
+    downButton.setPosition(buttonSize*5.6,buttonSize*1.5);
+    downButton.setScaleX( buttonSize / downButton.getContentSize().height * 0.9);
+    downButton.setScaleY( buttonSize / downButton.getContentSize().width * 0.9);
+    /// 방향키 하 그리기 끝
+    cc.eventManager.addListener({
+      event: cc.EventListener.TOUCH_ONE_BY_ONE ,
+      swallowTouces: false,
+      onTouchBegan: function (touch, event) {
+        var target = event.getCurrentTarget();
+        console.log("upup!!",target);
+      }
+    }, upButton);
+    cc.eventManager.addListener({
+      event: cc.EventListener.MOUSE ,
+      onMouseDown: function (event) {
+        var target = event.getCurrentTarget();
+        console.log("upup!!mouse",target);
+      }
+    }, upButton);
+    this.addChild(upButton);
+    this.addChild(leftButton);
+    this.addChild(rightButton);
+    this.addChild(downButton);
+  }
+});
+/*
 var GameOverLayer = cc.LayerColor.extend({
   ctor: function(){
     this._super();
@@ -202,13 +264,15 @@ var GameLayer = cc.Layer.extend({
     }
   }
 });
-
+*/
 var GameScene = cc.Scene.extend({
     onEnter:function () {
         this._super();
         //var layer = new GameLayer();
         var layer = new GridLayer();
+        var buttonLayer = new ButtonLayer();
         this.addChild(layer);
+        this.addChild(buttonLayer);
         layer.init();
     }
 });
