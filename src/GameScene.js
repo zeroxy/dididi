@@ -10,7 +10,36 @@ var getGridLine = function(startx, starty, width, height, xCount, yCount){
   }
   return result;
 }
-var GridLayer = cc.Layer.extend({
+var sampleMapData = "0aa1aaaaaaaaaaaaaaa2"+
+                    "b  b               b"+
+                    "b  b               b"+
+                    "b  b               b"+
+                    "b  b               b"+
+                    "b  b       b       b"+
+                    "b  b       b       b"+
+                    "b  6aaaaaaa4aa     b"+
+                    "b          b       b"+
+                    "b          9       b"+
+                    "b                  b"+
+                    "b  aaaaaaaaaaaaaaaa5"+
+                    "b                  b"+
+                    "b  b aaaaaaaaaaaaaa5"+
+                    "b  b               b"+
+                    "b  b  a1aaa1aa   b b"+
+                    "b  b   bcccb     b b"+
+                    "b  3aaa7aaa7aaaa b b"+
+                    "b  b             b b"+
+                    "6aa7aaaaaaaaaaaaa7a8";
+
+var MapLayer = cc.Layer.extend({
+  tile: function(hexnum){ 
+    var spriteXY = [{x:0,y:0}, {x:4,y:0}, {x:2,y:0},
+                    {x:3,y:1}, {x:4,y:1}, {x:5,y:1},
+                    {x:0,y:2}, {x:4,y:2}, {x:2,y:2},
+                    {x:1,y:1}, {x:1,y:0}, {x:0,y:1}, {x:3,y:0},{x:2,y:1}];
+    var tempxy = spriteXY[parseInt(hexnum,16)];
+    return new cc.Sprite(wall, cc.rect( 16*tempxy.x, 48+16*tempxy.y,16,16));
+  },
   ctor: function(){
     this._super();
     this.init();
@@ -22,10 +51,11 @@ var GridLayer = cc.Layer.extend({
     var gridStartY = winSize.height-winSize.width;
     var gridWidth = winSize.width-20;
     var gridHeight = winSize.width-20;
-    var gridXCount = 3;
-    var gridYCount = 3;
+    var gridXCount = 20;
+    var gridYCount = 20;
     var charSizeX = gridWidth/gridXCount;
     var charSizeY = gridHeight/gridYCount;
+    
     /// 그리드 그리기 시작
     getGridLine(gridStartX, gridStartY, gridWidth, gridHeight, gridXCount, gridYCount)
     .map(function(elem){
@@ -34,11 +64,46 @@ var GridLayer = cc.Layer.extend({
       this.addChild(line);
     },this);
     /// 그리드 그리기 끝
+    for (var x = 0; x < gridXCount ; x++){
+      for (var y = 0; y < gridYCount ; y++){
+        var tiletype = sampleMapData[y*gridXCount+x];
+        if (tiletype==" ")
+          var temptile = new cc.Sprite(tile, cc.rect(0,0,16,16));
+        else 
+          var temptile = this.tile(tiletype);
+        temptile.setAnchorPoint(0,0);
+        temptile.setPosition(gridStartX+charSizeX*x, gridStartY+charSizeY*(gridYCount-y-1));
+        temptile.setScaleX( charSizeX / temptile.getContentSize().height);
+        temptile.setScaleY( charSizeY / temptile.getContentSize().width);
+
+        this.addChild(temptile);
+      }
+    }
+    
+    
+  }
+});
+var CharacterLayer = cc.Layer.extend({
+  ctor: function(){
+    this._super();
+    this.init();
+  },
+  init: function(){
+    this._super();
+    var winSize = cc.director.getWinSize();
+    var gridStartX = 10;
+    var gridStartY = winSize.height-winSize.width;
+    var gridWidth = winSize.width-20;
+    var gridHeight = winSize.width-20;
+    var gridXCount = 20;
+    var gridYCount = 20;
+    var charSizeX = gridWidth/gridXCount;
+    var charSizeY = gridHeight/gridYCount;
     
     /// 케릭터 이미지 그리기 시작
-    var Character = new cc.Sprite(shovel);
-    Character.setAnchorPoint(0.5, 0.5);
-    Character.setPosition(gridStartX+charSizeX*1.5, gridStartY+charSizeY*1.5);
+    var Character = new cc.Sprite(player, cc.rect( 0, 128,16,16));
+    Character.setAnchorPoint(0, 0);
+    Character.setPosition(gridStartX+charSizeX*10, gridStartY+charSizeY*10);
     Character.setScaleX( charSizeX / Character.getContentSize().height * 0.9);
     Character.setScaleY( charSizeY / Character.getContentSize().width * 0.9);
     this.addChild(Character);
@@ -57,55 +122,98 @@ var ButtonLayer = cc.Layer.extend({
     var buttonSize = (winSize.height-winSize.width)/4.5;
     
     /// 방향키 상 그리기 시작
-    var upButton = new cc.Sprite(garlic);
+    var upButton = new cc.Sprite(GUI, cc.rect(80,16,16,16));
     upButton.setAnchorPoint(0.5, 0.5);
     upButton.setPosition(buttonSize*6,buttonSize*3.8);
     upButton.setScaleX( buttonSize / upButton.getContentSize().height * 0.9);
     upButton.setScaleY( buttonSize / upButton.getContentSize().width * 0.9);
     /// 방향키 상 그리기 끝
     /// 방향키 좌 그리기 시작
-    var leftButton = new cc.Sprite(garlic);
+    var leftButton = new cc.Sprite(GUI, cc.rect(80,64,16,16));
     leftButton.setAnchorPoint(0.5, 0.5);
-    leftButton.setRotation(270);
     leftButton.setPosition(buttonSize*5.2,buttonSize*2.6);
     leftButton.setScaleX( buttonSize / leftButton.getContentSize().height * 0.9);
     leftButton.setScaleY( buttonSize / leftButton.getContentSize().width * 0.9);
     /// 방향키 좌 그리기 끝
     /// 방향키 우 그리기 시작
-    var rightButton = new cc.Sprite(garlic);
+    var rightButton = new cc.Sprite(GUI, cc.rect(80,32,16,16));
     rightButton.setAnchorPoint(0.5, 0.5);
-    rightButton.setRotation(90);
     rightButton.setPosition(buttonSize*6.2,buttonSize*2.6);
     rightButton.setScaleX( buttonSize / rightButton.getContentSize().height * 0.9);
     rightButton.setScaleY( buttonSize / rightButton.getContentSize().width * 0.9);
     /// 방향키 우 그리기 끝
     /// 방향키 하 그리기 시작
-    var downButton = new cc.Sprite(garlic);
+    var downButton = new cc.Sprite(GUI, cc.rect(80,48,16,16));
     downButton.setAnchorPoint(0.5, 0.5);
-    downButton.setRotation(180);
     downButton.setPosition(buttonSize*5.6,buttonSize*1.5);
     downButton.setScaleX( buttonSize / downButton.getContentSize().height * 0.9);
     downButton.setScaleY( buttonSize / downButton.getContentSize().width * 0.9);
     /// 방향키 하 그리기 끝
-    cc.eventManager.addListener({
-      event: cc.EventListener.TOUCH_ONE_BY_ONE ,
-      swallowTouces: false,
-      onTouchBegan: function (touch, event) {
-        var target = event.getCurrentTarget();
-        console.log("upup!!",target);
-      }
-    }, upButton);
-    cc.eventManager.addListener({
-      event: cc.EventListener.MOUSE ,
-      onMouseDown: function (event) {
-        var target = event.getCurrentTarget();
-        console.log("upup!!mouse",target);
-      }
-    }, upButton);
+
+    /// 버튼 동작 정의
+    upButton.pushed = function(){
+      console.log("윗버튼 눌림!!");
+    };
+    leftButton.pushed = function(){
+      console.log("왼버튼 눌림!!");
+    };
+    rightButton.pushed = function(){
+      console.log("우버튼 눌림!!");
+    };
+    downButton.pushed = function(){
+      console.log("밑버튼 눌림!!");
+    };
+    /// 버튼 동작 정의 끝
+    
+    /// ButtonLayer 에 button sprite 추가 
     this.addChild(upButton);
     this.addChild(leftButton);
     this.addChild(rightButton);
     this.addChild(downButton);
+    /// ButtonLayer 에 button sprite 추가 끝
+    
+    /// button touch listener 생성
+    var buttonTouchListener = cc.EventListener.create({
+      event: cc.EventListener.TOUCH_ONE_BY_ONE ,
+      swallowTouces: true,
+      onTouchBegan: function (touch, event) {
+        var target = event.getCurrentTarget();
+        var locationInNode = target.convertToNodeSpace(touch.getLocation());
+        var s = target.getContentSize();
+        var rect = cc.rect(0,0,s.width, s.height);
+        if( cc.rectContainsPoint(rect, locationInNode)){
+          target.pushed();
+        }
+      }
+    });
+    //cc.eventManager.addListener(
+    //  cc.EventListener.create({
+    //    event: cc.EventListener.MOUSE ,
+    //    onMouseDown: function (event) {
+    //      var target = event.getCurrentTarget();
+    //      var locationInNode = target.convertToNodeSpace(event.getLocation());
+    //      var s = target.getContentSize();
+    //      var rect = cc.rect(0,0,s.width, s.height);
+    //      if( cc.rectContainsPoint(rect, locationInNode)){
+    //        console.log("upup!!mouse", locationInNode, target);
+    //        target.pushed();
+    //      }
+    //      
+    //    }
+    //  }),
+    //upButton);
+    /// button touch listener 생성 끝
+    
+    //http://opengameart.org/content/dawnlike-16x16-universal-rogue-like-tileset-v181
+    
+    
+    /// 개별 버튼에 생성해둔 버튼 리스너를 event Manager로 붙임
+    cc.eventManager.addListener(buttonTouchListener, upButton);
+    cc.eventManager.addListener(buttonTouchListener.clone(), leftButton);
+    cc.eventManager.addListener(buttonTouchListener.clone(), rightButton);
+    cc.eventManager.addListener(buttonTouchListener.clone(), downButton);
+    /// 개별 버튼에 생성해둔 버튼 리스너를 event Manager로 붙임
+    
   }
 });
 /*
@@ -268,11 +376,11 @@ var GameLayer = cc.Layer.extend({
 var GameScene = cc.Scene.extend({
     onEnter:function () {
         this._super();
-        //var layer = new GameLayer();
-        var layer = new GridLayer();
+        var mapLayer = new MapLayer();
+        var characterLayer = new CharacterLayer();
         var buttonLayer = new ButtonLayer();
-        this.addChild(layer);
+        this.addChild(mapLayer);
+        this.addChild(characterLayer);
         this.addChild(buttonLayer);
-        layer.init();
     }
 });

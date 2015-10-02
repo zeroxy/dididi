@@ -5,7 +5,7 @@ cc.game.onStart = function(){
     var designSize = cc.size(640, 960);
     var screenSize = cc.view.getFrameSize();
 
-    cc.loader.resPath = "res/Normal";
+    cc.loader.resPath = "res";
     cc.view.setDesignResolutionSize(designSize.width, designSize.height, cc.ResolutionPolicy.SHOW_ALL);
 
     //load resources
